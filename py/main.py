@@ -1,16 +1,10 @@
 import os
 import base64
 import requests
-from PIL import Image
+import base64
 from pathlib import Path
-
-
-def get_image_files(folder_path):
-    """Get sorted list of image files from folder"""
-    files = [
-        f for f in os.listdir(folder_path) if f.endswith((".png", ".jpg", ".jpeg"))
-    ]
-    return sorted(files)
+from PIL import Image
+from io import BytesIO
 
 
 def image_to_base64(image_path):
@@ -19,18 +13,24 @@ def image_to_base64(image_path):
         return base64.b64encode(img_file.read()).decode("utf-8")
 
 
-def process_image(base64_string, output_path, api_url):
-    """Send POST request and save response"""
-    headers = {"Content-Type": "application/json"}
-    payload = {"image": base64_string}
+def process_image(api_url, base64_string, target_age, output_path):
+    payload = {
+        "input": {
+            "image": f"data:image/jpeg;base64,{base64_string}",
+            "target_age": target_age,
+        }
+    }
 
     try:
-        # Set timeout to 120 seconds (2 minutes)
-        response = requests.post(api_url, json=payload, headers=headers, timeout=120)
-        if response.status_code == 200:
-            # Assuming the response contains image data
-            with open(output_path, "wb") as f:
-                f.write(response.content)
+        response = requests.post(api_url, json=payload)
+        response.raise_for_status()
+        result = response.json()
+
+        if result["status"] == "succeeded":
+            output_base64 = result["output"].split(",")[1]
+            image_data = base64.b64decode(output_base64)
+            image = Image.open(BytesIO(image_data))
+            image.save(output_path, format="JPEG", quality=80)
             return True
     except requests.exceptions.Timeout:
         print("Request timed out after 120 seconds")
@@ -44,8 +44,9 @@ def process_image(base64_string, output_path, api_url):
 def main():
     # Configuration
     input_folder = input("Enter path to image sequence folder: ")
-    api_url = input("Enter API URL: ")
-    output_folder = "./out"
+    target_ages = input("Enter target ages (comma-separated): ").split(",")
+    api_url = "http://localhost:5000/predictions"
+    output_folder = input("Enter output directory: ")
 
     # Create output directory if it doesn't exist
     Path(output_folder).mkdir(parents=True, exist_ok=True)
@@ -53,21 +54,20 @@ def main():
     # Get list of images
     image_files = get_image_files(input_folder)
 
-    # Process each image
+    # Process each image for each target age
     for idx, image_file in enumerate(image_files, 1):
         input_path = os.path.join(input_folder, image_file)
-        output_path = os.path.join(output_folder, f"processed_{idx}.png")
+        with open(input_path, "rb") as image_file:
+            base64_string = base64.b64encode(image_file.read()).decode("utf-8")
 
-        print(f"Processing image {idx}/{len(image_files)}: {image_file}")
-
-        # Convert to base64
-        base64_string = image_to_base64(input_path)
-
-        # Send request and save result
-        if process_image(base64_string, output_path, api_url):
-            print(f"Successfully processed and saved: {output_path}")
-        else:
-            print(f"Failed to process: {image_file}")
+        for target_age in target_ages:
+            output_path = os.path.join(
+                output_folder, f"age-{target_age}-frame-{idx}-processed.jpg"
+            )
+            print(
+                f"Processing image {idx}/{len(image_files)} for target age {target_age}: {image_file}"
+            )
+            process_image(api_url, base64_string, target_age, output_path)
 
 
 if __name__ == "__main__":

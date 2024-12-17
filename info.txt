@@ -1,0 +1,15 @@
+request body:
+
+{
+  "input": {
+      "image": "data:image/jpeg;base64,[paste base64 here]",
+      "target_age": "12"
+    }
+}
+
+response body:
+
+{
+  "status": "succeeded",
+  "output": "data:image/png;base64,[base64 here]"
+}
