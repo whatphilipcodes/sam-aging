@@ -2,11 +2,11 @@
 
 ### About
 
-I was approached by Sina Rohde (MA Production), as she was preparing a presentation about machine learning based methods for age manipulation in movies. As a result I built this repository as a complement to the [replicate implementation](https://replicate.com/yuval-alaluf/sam) of the paper [Only a Matter of Style: Age Transformation Using a Style-Based Regression Model](https://doi.org/10.48550/arXiv.2102.02754).
+I was approached by Sina Rohde (MA Production), as she was preparing a presentation about machine learning based methods for age manipulation in movies. As a result, I built this repository as a complement to the [replicate implementation](https://replicate.com/yuval-alaluf/sam) of the paper [Only a Matter of Style: Age Transformation Using a Style-Based Regression Model](https://doi.org/10.48550/arXiv.2102.02754).
 
 ### Usage
 
-If you want to try out the model yourself please refer to the [replicate implementation](https://replicate.com/yuval-alaluf/sam?input=docker). Once the model is running on your machine you can use the script `./py/main.py` to feed all of the images from a specified folder to the model and generate multiple target age transformations for each image.
+If you want to try out the model yourself, please refer to the [replicate implementation](https://replicate.com/yuval-alaluf/sam?input=docker). Once the model is running on your machine, you can use the script `./py/main.py` to feed all of the images from a specified folder to the model and generate multiple target age transformations for each image.
 
 ```bash
 # requires poetry to be installed on your machine
@@ -40,7 +40,7 @@ The following models were considered for this project:
 
 ### Understanding
 
-The SAM model is designed to transform facial images to show how a person might look at different ages. Under the hood it is comprised of two neural networks:
+The SAM model is designed to transform facial images to show how a person might look at different ages. Under the hood, it is composed of two neural networks:
 
 - A StyleGAN-based `generator` to create realistic faces
 - An age `regression network` to guide the transformation
@@ -106,6 +106,6 @@ All full resolution output images and videos are available on [Google Drive](htt
 
 ### Conclusion
 
-Although the output is fascinating in its own regard, real world application of this exact model for Re- and De-Aging in the VFX pipeline is not feasible. For a convincing result a lot of manual labor is still involved with this approach. Another major issue with this technique is the loss of facial expressions. The resulting output images all share a very similar facial expression which is not ideal when trying to convey an actors performance in a shot.
+Although the output is fascinating in its own regard, real world application of this exact model for Re- and De-Aging in the VFX pipeline is not feasible. For a convincing result, a lot of manual labor is still involved with this approach. Another major issue with this technique is the loss of facial expressions. The resulting output images all share a very similar facial expression which is not ideal when trying to convey an actor's performance in a shot.
 
-The closed-source [approach](https://studios.disneyresearch.com/2022/11/30/production-ready-face-re-aging-for-visual-effects/) by Disney is much more capable and even takes care of the whole processing pipeline from video to video automatically. Unfortunately at the time of writing this, to my knowledge no open-source implementation of this model is available.
+The closed-source [approach](https://studios.disneyresearch.com/2022/11/30/production-ready-face-re-aging-for-visual-effects/) by Disney is much more capable and even takes care of the whole processing pipeline from video to video automatically. Unfortunately, at the time of writing this, to my knowledge no open-source implementation of this model is available.
