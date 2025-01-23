@@ -1,10 +1,17 @@
 import os
 import base64
 import requests
-import base64
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
+
+
+def get_image_files(folder_path):
+    """Get sorted list of image files from folder"""
+    files = [
+        f for f in os.listdir(folder_path) if f.endswith((".png", ".jpg", ".jpeg"))
+    ]
+    return sorted(files)
 
 
 def image_to_base64(image_path):
@@ -44,8 +51,8 @@ def process_image(api_url, base64_string, target_age, output_path):
 def main():
     # Configuration
     input_folder = input("Enter path to image sequence folder: ")
+    api_url = input("Enter API URL: ")
     target_ages = input("Enter target ages (comma-separated): ").split(",")
-    api_url = "http://localhost:5000/predictions"
     output_folder = input("Enter output directory: ")
 
     # Create output directory if it doesn't exist
